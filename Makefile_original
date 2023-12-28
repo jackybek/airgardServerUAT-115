@@ -1,0 +1,28 @@
+#CC=gcc
+#CFLAGS1=-g -std=c99 -v
+CC=g++
+CFLAGS1=-x c++ -std=c++98 -v -Wno-literal-suffix -Wno-write-strings -Wno-long-long -Wno-return-type
+CFLAGS2=-I/home/pi/open62541/ -I/home/pi/open62541/include -I/home/pi/open6251/plugins -I/usr/local/include
+CFLAGS3=-g
+DEPS=open62541.h
+LIBS=-lm -lrt -lmodbus -lqpid-proton-core -lqpid-proton-proactor -lqpid-proton -lwebsockets -ljson-c \
+-lmariadbclient -lpthread -lxml2 -lcrypto -lssl -lmbedtls -lmbedx509 -lmbedcrypto
+OBJ=open62541.o ua_amqp_adaptor.o ua_pubsub_amqp.o SV_Misc.o SV_ExtractXMLElementNames.o SV_Alarm.o SV_Event.o \
+SV_Monitor.o SV_Method.o SV_Historizing.o SV_PopulateOPCUANodes.o SV_CreateOPCUANodes.o \
+SV_StartOPCUAServer.o json_checker.o SV_PubSub.o SV_mainOPCUAServer.o
+
+ODIR=obj
+LDIR1=-L/usr/local/lib/
+LDIR2=-L/usr/lib/
+LDFLAGS= $(LDIR1) -lopen62541.a -static
+
+all: myNewServer
+
+%.o: %c $(DEPS)
+	$(CC) -c -o $@ $< $(CFLAGS1) $(CFLAGS2) $(CFLAGS3)
+
+myNewServer: $(OBJ)
+	$(CC) -o $@ $^ $(CFLAGS1) $(CFLAGS2) $(CFLAGS3) $(LDIR2) $(LIBS)
+
+#g++ -g -x c++ -std=c++98 -v -fpermissive -Wno-literal-suffix -Wno-write-strings -Wno-long-long -Wno-return-type -c ua_pubsub_amqp.c -o ua_pubsub_amqp.o
+
